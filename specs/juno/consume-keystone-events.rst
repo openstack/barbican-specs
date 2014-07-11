@@ -69,11 +69,15 @@ allow usage of different type of messaging transport.
 
 * Deletion of a keystone project will invoke delete on related secret(s),
   container(s), tenant entity. Currently entity delete is a soft delete as
-  specific fields are marked deleted but record remains in datastore. In the
-  event that a project is disabled, Keystone will invalidate the tokens for
+  specific fields are marked deleted but the record remains in datastore. In
+  the event that a project is disabled, Keystone will invalidate the tokens for
   that project and the secrets owned by that project will be inaccessible.
   The secrets owned by Barbican won't be soft deleted but they will be
-  unreachable.
+  unreachable. Also, the keystone delete project and the barbican delete
+  project should both generate CADF audit events and ideally a correlation
+  identifier should be used between these two events. Also an extension field
+  in the audit record should be used to declare the type of delete (soft
+  or hard).
 
 * Keystone sends various notification events based on its own resource types
   (e.g. user, project, role etc.) and type of operation (e.g. created,
