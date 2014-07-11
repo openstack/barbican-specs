@@ -50,7 +50,7 @@ a non existing project.
 Proposed Change
 ===============
 
-Keystone publishes notifications whenever a project is inserted, modified and
+Keystone publishes notifications whenever a project is created, updated and
 deleted. Proposal is to add notification listener in barbican to consume
 keystone public events.
 
@@ -67,9 +67,13 @@ Following is keystone sample notification on project delete::
 Event listener will use oslo messaging library which provides a abstraction to
 allow usage of different type of messaging transport.
 
-* Delete of a keystone project will invoke delete on related secret(s),
+* Deletion of a keystone project will invoke delete on related secret(s),
   container(s), tenant entity. Currently entity delete is a soft delete as
-  specific fields are marked deleted but record remains in datastore.
+  specific fields are marked deleted but record remains in datastore. In the
+  event that a project is disabled, Keystone will invalidate the tokens for
+  that project and the secrets owned by that project will be inaccessible.
+  The secrets owned by Barbican won't be soft deleted but they will be
+  unreachable.
 
 * Keystone sends various notification events based on its own resource types
   (e.g. user, project, role etc.) and type of operation (e.g. created,
