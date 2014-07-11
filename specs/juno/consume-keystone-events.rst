@@ -111,7 +111,7 @@ allow usage of different type of messaging transport.
 
 * Once such event support is available in barbican, those events can be
   propagated to barbican's external sub-components if it makes sense. One
-  example of such sub-comonent can be clean up of key encrpyion keys in HSM
+  example of such sub-comonent can be clean up of key encryption keys in HSM
   (when this feature is added in future).
 
 Alternatives
@@ -119,7 +119,7 @@ Alternatives
 
 There can be other ways to get keystone project information like polling model
 or accessing keystone datastore directly but there are not scalable and may
-introduce tight coupling between services. Events based asynchornous apporach
+introduce tight coupling between services. Events based asynchronous approach
 is better as keystone notifications are primarily intended for other openstack
 services to take action based on events e.g. cleanup of their resources.
 
@@ -163,7 +163,7 @@ None
 Performance Impact
 ------------------
 
-There should not be performance impact other than new messgae handling server
+There should not be performance impact other than new message handling server
 is added on same host system.
 
 * As result of this change, barbican number of connections to db system may
@@ -233,7 +233,7 @@ None
 Testing
 =======
 
-Add any itegration test provided needed messaging support is available.
+Add any integration test provided needed messaging support is available.
 
 
 Documentation Impact
