@@ -57,6 +57,11 @@ The REST request and response structure for container may contain
            "secret_ref":"http://localhost:9311/v1/b885a8320e4f48c69ddffb0364eeef36/secrets/46332930-8e52-4c40-b069-cc39ca65a221"
         },
         {
+           "name": "intermediates",
+           "secret_ref":"http://localhost:9311/v1/b885a8320e4f48c69ddffb0364eeef36/secrets/21f2234a-f65c-11e3-8791-002564955ea1"
+        },
+        {
+
            "name": "private_key",
            "secret_ref":"http://localhost:9311/v1/b885a8320e4f48c69ddffb0364eeef36/secrets/094e76ed-85e0-49b1-b6ce-6bde3cf6571c"
         },
@@ -83,6 +88,11 @@ The REST request and response structure for container may contain
                 "name": "certificate"
             },
             {
+               "name": "intermediates",
+               "secret_ref":"http://localhost:9311/v1/b885a8320e4f48c69ddffb0364eeef36/secrets/21f2234a-f65c-11e3-8791-002564955ea1"
+            },
+            {
+
                 "secret_ref": "http://localhost:9311/v1/b885a8320e4f48c69ddffb0364eeef36/secrets/a7a61669-c6fb-4375-9577-11744f4a88f7",
                 "name": "private_key"
             }
