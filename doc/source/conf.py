@@ -33,7 +33,12 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
               'sphinx.ext.viewcode',
               'oslosphinx',
+              'yasfb',
              ]
+
+# Feed configuration for yasfb
+feed_base_url = 'http://specs.openstack.org/openstack/barbican-specs'
+feed_author = 'OpenStack Barbican Team'
 
 todo_include_todos = True
 
