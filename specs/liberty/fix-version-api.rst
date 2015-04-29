@@ -265,7 +265,7 @@ Assignee(s)
 -----------
 
 Primary assignee:
-  TBD
+  jaosorior
 
 Other potential contributors:
   john-wood-w
