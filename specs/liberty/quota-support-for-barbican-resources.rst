@@ -59,7 +59,7 @@ have quota support:
 
 *Note:*
 
-This proposal is a simpler subset of the quota implemenation done
+This proposal is a simpler subset of the quota implementation done
 by oslo.common.quota.py. Barbican does not have any reservable resources
 and so the quotas are much simpler in that there is no usage tracking and
 reservations. Also, project-user level quota enforcement is not covered
@@ -113,9 +113,11 @@ quota limits:
     quota_consumers = 100
 
 A number >=0 for the quota_<value> indicates the max
-limit for that resource and a negative value means unlimited.
+limit for that resource and a negative value means unlimited.  A value
+of zero indicates a maximum of zero instances of that resource, effectively
+disabling creation of that entity.
 
-While these generic quotas applies to all projects, there will
+While these generic quotas apply to all projects, there will
 also be support to enforce quotas per project.
 The priority in which the quotas are enforced is then:
 [per project quotas] => [default quotas]
@@ -142,16 +144,21 @@ The details of this is discussed in a later section below.
 Alternatives
 ------------
 
-The quota configuration and logic are derived by looking at quota
+An attempt was made to create an oslo.common library with quota support
+for all OpenStack projects.  The first attempt was committed to oslo, however
+it has been deprecated and has not been adopted by any projects.  A second
+attempt was started, but has been put on hold with no current plans to restart.
+There is no other common OpenStack library implementing quotas for Barbican to adopt.
+
+The quota configuration and logic will be derived by looking at quota
 implementations done by other OpenStack projects like nova, cinder
-and neutron. Much of this logic (sans db implementation) has been
-refactored into oslo.common. The implementation of this spec should
-make use of the oslo common quota implementation to avoid code
-duplication.
+and neutron.  A simplified implementation will developed for Barbican by
+using APIs and logic similar to Nova's implementation, while removing unneeded
+features, such as pluggable backend drivers and resource reservation.
 
 Another alternative is an initiative by Kevin Mitchell from Rackspace
-https://wiki.openstack.org/wiki/Boson. However, the oslo.common
-implementation is more usable for Barbican.
+https://wiki.openstack.org/wiki/Boson. However, the Nova and Cinder design
+is more usable for Barbican.
 
 
 Data model impact
@@ -175,7 +182,7 @@ The following new data models will be added:
                 "containers","transport_keys", "consumers"
   * hard_limit: Integer
 
-  **Contraints**: project_id + resource should be unique
+  **Constraints**: project_id + resource should be unique
 
 
 * Changes to existing models:
@@ -198,7 +205,7 @@ other APIs require the caller to have admin role.
     project. If there are no project specific quotas returns the
     deployment default resource limits.
 
-  * GET v1/quotas
+  * GET /v1/quotas
 
   * Normal http response code(s)
     200 OK
@@ -279,7 +286,7 @@ other APIs require the caller to have admin role.
     for a project, this call will return defaults for other resources in that
     project.
 
-  * GET v1/project-quotas?limit=x&offset=y (Admin only)
+  * GET /v1/project-quotas?limit=x&offset=y (Admin only)
 
   * Normal http response code(s)
     200 OK
@@ -383,7 +390,7 @@ other APIs require the caller to have admin role.
     are only project specific quotas for few resources for a project, this call
     will return defaults for other resources in that project.
 
-  * GET v1/project-quotas/{project-id}
+  * GET /v1/project-quotas/{project-id}
 
   * Normal http response code(s)
     200 OK
@@ -454,7 +461,7 @@ other APIs require the caller to have admin role.
     resource is not specified, the default limits are used for that
     resource.
 
-  * PUT v1/project-quotas/{project-id}
+  * PUT /v1/project-quotas/{project-id}
 
   * Normal http response code(s)
     204 No Content
@@ -694,25 +701,24 @@ Implementation
 Assignee(s)
 -----------
 
-Venkat Sundaram (tsv) will be leading the implementation of the code.
+Dave McCowan (dave-mccowan) will be leading the implementation of the code.
 
 Primary assignee:
-  <tsv>
+  <dave-mccowan>
 
 Other assignees:
-  <meera>
 
 Work Items
 ----------
 
-* Quota db provider source code (tsv)
-* Data model additions (tsv)
-* Alembic migration version script (tsv)
-* Updated default config file with quota section (tsv)
-* python-barbicanclient enhancements to support quota operations (tsv)
-* New unit tests to test quota related source changes (tsv)
-* Update existing resource unit tests to handle quota violation errors (tsv)
-* Functional tests (meera)
+* Quota db provider source code
+* Data model additions
+* Alembic migration version script
+* Updated default config file with quota section
+* python-barbicanclient enhancements to support quota operations
+* New unit tests to test quota related source changes
+* Update existing resource unit tests to handle quota violation errors
+* Functional tests
 
 
 Dependencies
@@ -723,7 +729,7 @@ TBD
 Testing
 =======
 
-New functional tests and tempest tests need to be added. Details TBD
+New unit tests, functional tests, and tempest tests need to be added. Details TBD
 
 
 Documentation Impact
