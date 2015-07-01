@@ -82,7 +82,7 @@ as follows for resource creation requests:
 3. If the count equals or exceeds the quotas, reject the request with
    the following error message:
    HTTP 403 Forbidden
-   {"error": "Quota exceeded for <project-id>. Only <count> <resource>s
+   {"error": "Quota exceeded for <project_id>. Only <count> <resource>s
    are allowed"
    }
 4. Continue with the resource creation
@@ -319,13 +319,13 @@ other APIs require the caller to have admin role.
         {
           'type': 'object',
           'properties': {
-              'project-quotas': {
+              'project_quotas': {
                 'type': 'array'
                 'items': {
                   'type': 'object',
                   'properties': {
-                     'project-id': {'type':'string'},
-                     'project-quotas': {
+                     'project_id': {'type':'string'},
+                     'project_quotas': {
                           'type':'object',
                           'properties': {
                              'secrets': {'type': 'integer'},
@@ -359,10 +359,10 @@ other APIs require the caller to have admin role.
           Content-Type: application/json
 
           {
-            "project-quotas": [
+            "project_quotas": [
               {
-                "project-id": "1234",
-                "project-quotas": {
+                "project_id": "1234",
+                "project_quotas": {
                      "secrets": 2000,
                      "orders": 1000,
                      "containers": 500,
@@ -371,8 +371,8 @@ other APIs require the caller to have admin role.
                  }
               },
               {
-                "project-id": "5678",
-                "project-quotas": {
+                "project_id": "5678",
+                "project_quotas": {
                      "secrets": 200,
                      "orders": 100,
                      "containers": 100,
@@ -390,7 +390,7 @@ other APIs require the caller to have admin role.
     are only project specific quotas for few resources for a project, this call
     will return defaults for other resources in that project.
 
-  * GET /v1/project-quotas/{project-id}
+  * GET /v1/project-quotas/{project_id}
 
   * Normal http response code(s)
     200 OK
@@ -415,7 +415,7 @@ other APIs require the caller to have admin role.
         {
           'type': 'object',
           'properties': {
-               'project-quotas': {
+               'project_quotas': {
                   'type':'object',
                   'properties': {
                     'secrets': {'type': 'integer'},
@@ -444,7 +444,7 @@ other APIs require the caller to have admin role.
           Content-Type: application/json
 
           {
-            "project-quotas": {
+            "project_quotas": {
               "secrets": 10,
               "orders": 20,
               "containers": 10,
@@ -461,7 +461,7 @@ other APIs require the caller to have admin role.
     resource is not specified, the default limits are used for that
     resource.
 
-  * PUT /v1/project-quotas/{project-id}
+  * PUT /v1/project-quotas/{project_id}
 
   * Normal http response code(s)
     204 No Content
@@ -486,7 +486,7 @@ other APIs require the caller to have admin role.
         {
           'type': 'object',
           'properties': {
-             'project-quotas': {
+             'project_quotas': {
                   'type':'object',
                   'properties': {
                      'secrets': {'type': 'integer'},
@@ -515,7 +515,7 @@ other APIs require the caller to have admin role.
           Body::
 
             {
-              "project-quotas": {
+              "project_quotas": {
                 "secrets": 50,
                 "orders": 10,
                 "containers": 20
@@ -528,7 +528,7 @@ other APIs require the caller to have admin role.
           200 OK
 
           {
-            "project-quotas": {
+            "project_quotas": {
               "secrets": 10,
               "orders": 20,
               "containers": 10,
@@ -544,7 +544,7 @@ other APIs require the caller to have admin role.
     After this call succeeds, the default resource quotas will be
     returned for subsequent calls by the user to list effective quotas.
 
-  * DELETE v1/project-quotas/{project-id}
+  * DELETE v1/project-quotas/{project_id}
 
   * Parameters
     None
