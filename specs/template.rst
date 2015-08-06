@@ -12,6 +12,10 @@ Include the URL of your launchpad blueprint:
 
 https://blueprints.launchpad.net/barbican/+spec/example
 
+Include the URL of your client blueprint:
+
+https://blueprints.launchpad.net/python-barbicanclient/example
+
 Introduction paragraph -- why are we doing anything? A single paragraph of
 prose that operators can understand.
 
@@ -182,6 +186,12 @@ Notifications & Audit Impact
 
 Please specify any changes to notifications or auditing. Be that an extra notification,
 changes to an existing notification, or removing a notification.
+
+Python and Command Line Client Impact
+-------------------------------------
+
+Please specify any changes to the python and command line clients (CLI).  Consider
+the OpenStack unified clients as well as the soon to be deprecated Barbican clients.
 
 Other end user impact
 ---------------------
