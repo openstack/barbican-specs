@@ -4,13 +4,13 @@
 Barbican Project Specifications
 ===============================
 
-Juno approved specs:
+Liberty approved specs:
 
 .. toctree::
    :glob:
    :maxdepth: 1
 
-   specs/juno/*
+   specs/liberty/*
 
 Kilo approved specs:
 
@@ -20,13 +20,13 @@ Kilo approved specs:
 
    specs/kilo/*
 
-Liberty approved specs:
+Juno approved specs:
 
 .. toctree::
    :glob:
    :maxdepth: 1
 
-   specs/liberty/*
+   specs/juno/*
 
 ==================
 Indices and tables
