@@ -48,7 +48,8 @@ Proposed Change
 ===============
 
 Introduce quotas for all Barbican resources. The quotas should have
-reasonably high values as defaults. The following resources will
+unlimited values as defaults, to ensure backwards compatibility with
+the current code that supports no quotas. The following resources will
 have quota support:
 
 * secrets
@@ -60,7 +61,7 @@ have quota support:
 *Note:*
 
 This proposal is a simpler subset of the quota implementation done
-by oslo.common.quota.py. Barbican does not have any reservable resources
+by Nova and Cinder. Barbican does not have any reservable resources
 and so the quotas are much simpler in that there is no usage tracking and
 reservations. Also, project-user level quota enforcement is not covered
 by this spec.
@@ -93,32 +94,38 @@ quota limits:
 
 ::
 
+    # ====================== Quota Options ===============================
+
     [quotas]
-    enabled = true
+    # For each resource, the default maximum number that can be used for
+    # a project is set below.  This value can be overridden for each
+    # project through the API.  A negative value means no limit.  A zero
+    # value effectively disables creation of the resource.
 
-    # number of secrets allowed per project
-    quota_secrets = 500
+    # default number of secrets allowed per project
+    quota_secrets = -1
 
-    # number of orders allowed per project
-    quota_orders = 100
+    # default number of orders allowed per project
+    quota_orders = -1
 
-    # number of containers allowed per project
+    # default number of containers allowed per project
     quota_containers = -1
-    # Note, a negative value signifies unlimited
 
-    # number of transport_keys allowed per project
-    quota_transport_keys = 100
+    # default number of transport_keys allowed per project
+    quota_transport_keys = -1
 
-    # number of consumers allowed per project
-    quota_consumers = 100
+    # default number of consumers allowed per project
+    quota_consumers = -1
+
 
 A number >=0 for the quota_<value> indicates the max
 limit for that resource and a negative value means unlimited.  A value
 of zero indicates a maximum of zero instances of that resource, effectively
-disabling creation of that entity.
+disabling creation of that entity.  To ensure backwards compatibility, the
+provided default for the defaults will be -1 (unlimited) for each resource.
 
 While these generic quotas apply to all projects, there will
-also be support to enforce quotas per project.
+also be support to define and enforce quotas per project.
 The priority in which the quotas are enforced is then:
 [per project quotas] => [default quotas]
 
@@ -137,8 +144,8 @@ A REST API for Barbican administrators for the quota CRUD operations will be
 implemented as well. Non-admin users will be provided with a REST API to get
 their own effective quotas for various resources. Keystone RBAC checks will
 be employed to decide if a caller has the required admin role to perform
-these admin-only operations. The admin endpoint of Barbican will not be used.
-The details of this is discussed in a later section below.
+these admin-only operations. The details of this is discussed in a later
+section below.
 
 
 Alternatives
@@ -148,7 +155,8 @@ An attempt was made to create an oslo.common library with quota support
 for all OpenStack projects.  The first attempt was committed to oslo, however
 it has been deprecated and has not been adopted by any projects.  A second
 attempt was started, but has been put on hold with no current plans to restart.
-There is no other common OpenStack library implementing quotas for Barbican to adopt.
+There is no other common OpenStack library implementing quotas for Barbican
+to adopt.
 
 The quota configuration and logic will be derived by looking at quota
 implementations done by other OpenStack projects like nova, cinder
@@ -168,21 +176,26 @@ The following new data models will be added:
 
 * ProjectQuota
 
-  Represents a single quota override for a project.
+  Represents quotas override for a project.
 
-  If there is no row for a given project id and resource, then the
-  default for the deployment is used. If the row is present but the hard
-  limit is "-1" (no quotes), then the resource is unlimited.
+  If there is no row for a given project id, then the
+  default for the deployment is used.  If the quota value for a resource
+  is null, then the default for that resource for the deployment is used.
+  If the quota value for a resource is 0, creation of that resource is
+  disabled.  If the quota value for a resource is -1, creation of that
+  resource is not limited by quota enforcement logic.
 
-  Schema: (table name: **project_quota**)
+  Schema: (table name: **project_quotas**)
 
-  * id:         Integer, Primary Key
-  * project_id: String(255)
-  * resource:   String(255), nullable=False, one of "secrets","orders",
-                "containers","transport_keys", "consumers"
-  * hard_limit: Integer
+  * project_id:     String(36) ForeignKey projects.id, nullable=False
+  * secrets:        Integer, nullable=True
+  * orders:         Integer, nullable=True
+  * containers:     Integer, nullable=True
+  * transport_keys: Integer, nullable=True
+  * consumers:      Integer, nullable=True
 
-  **Constraints**: project_id + resource should be unique
+  **Constraints**: project_id must be unique
+                   project_id must exist as projects.id
 
 
 * Changes to existing models:
@@ -212,9 +225,9 @@ other APIs require the caller to have admin role.
 
   * Expected error http response code(s)
 
-    * 401 Unauthorized - If the auth token is not present or invalid
-    * 404 Not Found - If using unauthenticated context and X-Project-Id
-                      header is not present in the request
+    * 401 Unauthorized - If the auth token is not present or invalid.
+                         Also, if using the unauthenticated context and
+                         the X-Project-Id header is not present in the request.
 
   * Required request headers
 
@@ -281,10 +294,13 @@ other APIs require the caller to have admin role.
 
 * List all project quotas (admin only)
 
-  * Lists all project level resource quotas across all users for all
-    projects. If there are only project specific quotas for few resources
-    for a project, this call will return defaults for other resources in that
-    project.
+  * Lists all configured project level resource quotas across all users for all
+    projects. If a project does not have project specific quotas configured,
+    that project is not included in the returned list.
+    If there are only project specific quotas for a subset of resources
+    for a project, this call will return null for those resources without a
+    configured value in that project. The returned list will be sorted
+    by create date, and support standard limit/offset paging.
 
   * GET /v1/project-quotas?limit=x&offset=y (Admin only)
 
@@ -293,14 +309,13 @@ other APIs require the caller to have admin role.
 
   * Expected error http response code(s)
 
-    * 401 Unauthorized - If the auth token is not present or invalid
-    * 404 Not Found - If using unauthenticated context and X-Project-Id
-                      header is not present in the request
+    * 401 Unauthorized - If the auth token is not present or invalid.
+                         Also, if using the unauthenticated context and
+                         the X-Project-Id header is not present in the request.
 
   * Required request headers
 
     X-Auth-Token, if using keystone auth
-
 
   * Parameters
 
@@ -364,10 +379,10 @@ other APIs require the caller to have admin role.
                 "project_id": "1234",
                 "project_quotas": {
                      "secrets": 2000,
-                     "orders": 1000,
-                     "containers": 500,
+                     "orders": 0,
+                     "containers": -1,
                      "transport_keys": 100,
-                     "consumers": 10000
+                     "consumers": null
                  }
               },
               {
@@ -375,9 +390,9 @@ other APIs require the caller to have admin role.
                 "project_quotas": {
                      "secrets": 200,
                      "orders": 100,
-                     "containers": 100,
-                     "transport_keys": 50,
-                     "consumers": 500
+                     "containers": -1,
+                     "transport_keys": 0,
+                     "consumers": null
                  }
               },
             ]
@@ -386,9 +401,12 @@ other APIs require the caller to have admin role.
 
 * Get quotas for a specific project (admin only)
 
-  * Returns a list of all resource quotas for the specified project. If there
-    are only project specific quotas for few resources for a project, this call
-    will return defaults for other resources in that project.
+  * Returns a set of configured resource quotas for the specified project.
+    If no project specific quota values have been configured (or if the
+    project does not exist), the API responds with Not Found.  If there are
+    only project specific quotas for a subset of resources for a project, this
+    call will return null for those resources without a configured value in
+    that project.
 
   * GET /v1/project-quotas/{project_id}
 
@@ -397,9 +415,11 @@ other APIs require the caller to have admin role.
 
   * Expected error http response code(s)
 
-    * 401 Unauthorized - If the auth token is not present or invalid
-    * 404 Not Found - If using unauthenticated context and X-Project-Id
-                      header is not present in the request
+    * 401 Unauthorized - If the auth token is not present or invalid.
+                         Also, if using the unauthenticated context and
+                         the X-Project-Id header is not present in the request.
+    * 404 Not Found - If there are no project quota settings to delete
+                      for the specified project.
 
   * Required request headers
 
@@ -447,8 +467,8 @@ other APIs require the caller to have admin role.
             "project_quotas": {
               "secrets": 10,
               "orders": 20,
-              "containers": 10,
-              "transport_keys": 5,
+              "containers": -1,
+              "transport_keys": null,
               "consumers": 10
             }
           }
@@ -456,21 +476,23 @@ other APIs require the caller to have admin role.
 
 * Update/Set quotas for a specific project (admin only)
 
-  * Updates and returns a list of resource quotas for the specified project.
-    It is not required to specify limits for all Barbican resources. If a
-    resource is not specified, the default limits are used for that
-    resource.
+  * Creates or updates the configured resource quotas for the specified
+    project. It is not required to specify limits for all Barbican resources.
+    If a value for a resource is not specified, the default limits will be
+    used for that resource.  If the specified project is not previously
+    known to Barbican, a new entry to the projects table will be created.
 
   * PUT /v1/project-quotas/{project_id}
 
   * Normal http response code(s)
+
     204 No Content
 
   * Expected error http response code(s)
 
-    * 401 Unauthorized - If the auth token is not present or invalid
-    * 404 Not Found - If using unauthenticated context and X-Project-Id
-                      header is not present in the request
+    * 401 Unauthorized - If the auth token is not present or invalid.
+                         Also, if using the unauthenticated context and
+                         the X-Project-Id header is not present in the request.
     * 400 Bad Request - If the request payload doesn't confirm to schema
 
   * Required request headers
@@ -525,24 +547,16 @@ other APIs require the caller to have admin role.
 
         Response:
 
-          200 OK
-
-          {
-            "project_quotas": {
-              "secrets": 10,
-              "orders": 20,
-              "containers": 10,
-              "transport_keys": 5,
-              "consumers": 10
-            }
-          }
+          204 OK
 
 
 * Delete quotas for a specific project (admin only)
 
-  * Deletes project specific resource quotas for the specified project.
-    After this call succeeds, the default resource quotas will be
-    returned for subsequent calls by the user to list effective quotas.
+  * Deletes the configured resource quotas for the specified
+    project.  After this call succeeds, the default resource quotas will be
+    returned for subsequent calls by the user to list effective quotas.  If
+    there are no project specific quota configuration, or the project is
+    not previously known in Barbican, Not Found is returned.
 
   * DELETE v1/project-quotas/{project_id}
 
@@ -554,9 +568,12 @@ other APIs require the caller to have admin role.
 
   * Expected error http response code(s)
 
-    * 401 Unauthorized - If the auth token is not present or invalid
-    * 404 Not Found - If using unauthenticated context and X-Project-Id
-                      header is not present in the request
+    * 401 Unauthorized - If the auth token is not present or invalid.
+                         Also, if using the unauthenticated context and
+                         the X-Project-Id header is not present in the request.
+    * 404 Not Found - If there are no project quota settings to delete
+                      for the specified project or the project is unknown
+                      to Barbican.
 
   * Required request headers
 
@@ -728,8 +745,7 @@ TBD
 
 Testing
 =======
-
-New unit tests, functional tests, and tempest tests need to be added. Details TBD
+New unit tests and functional tests need to be added.
 
 
 Documentation Impact
