@@ -55,7 +55,6 @@ have quota support:
 * secrets
 * orders
 * containers
-* transport_keys
 * consumers
 
 *Note:*
@@ -111,9 +110,6 @@ quota limits:
     # default number of containers allowed per project
     quota_containers = -1
 
-    # default number of transport_keys allowed per project
-    quota_transport_keys = -1
-
     # default number of consumers allowed per project
     quota_consumers = -1
 
@@ -143,10 +139,15 @@ per-project quotas are stored in db.
 A REST API for Barbican administrators for the quota CRUD operations will be
 implemented as well. Non-admin users will be provided with a REST API to get
 their own effective quotas for various resources. Keystone RBAC checks will
-be employed to decide if a caller has the required admin role to perform
-these admin-only operations. The details of this is discussed in a later
-section below.
+be employed to decide if a caller has the required role to perform
+these operations.
 
+Quota management should be under the purview of a service level administrator,
+not a project level administrator.  In the current Barbican implementation,
+there are four user roles: admin, creator, observer, and auditor.  All
+of these roles are project level.  Thus, to accomplish appropriate role
+based access to for quota a management, a new role will be created.  The
+name of this role will be "key-manager:service-admin".
 
 Alternatives
 ------------
@@ -168,6 +169,17 @@ Another alternative is an initiative by Kevin Mitchell from Rackspace
 https://wiki.openstack.org/wiki/Boson. However, the Nova and Cinder design
 is more usable for Barbican.
 
+In addition to the four resources specified above, a previous version of this
+spec described implementing quotas support for transport_keys.  This is not
+possible based on the current implementation of transport_keys, because they
+are defined per-plugin and not per-project.  A project admin should not
+be managing transport_keys at all.
+
+The name of the role required to manage project quotas is decided to be
+"key-manager:service-admin".  This foreshadows a future change where all
+Barbican roles might be defined with a namespace of key-manager.  A variety
+of other role names ("service-admin", "barbican-admin", "cloud-admin") were
+are also possible alternatives.
 
 Data model impact
 -----------------
@@ -191,7 +203,6 @@ The following new data models will be added:
   * secrets:        Integer, nullable=True
   * orders:         Integer, nullable=True
   * containers:     Integer, nullable=True
-  * transport_keys: Integer, nullable=True
   * consumers:      Integer, nullable=True
 
   **Constraints**: project_id must be unique
@@ -210,7 +221,7 @@ REST API impact
 
 The following new REST API will be implemented to manage quotas CRUD
 operations. Please note that except for the first GET API, all the
-other APIs require the caller to have admin role.
+other APIs require the caller to have "key-manager:service-admin" role.
 
 * Get effective quotas (any Barbican user)
 
@@ -256,7 +267,6 @@ other APIs require the caller to have admin role.
                   'secrets': {'type':'integer'}
                   'orders': {'type':'integer'},
                   'containers': {'type':'integer'},
-                  'transport_keys': {'type':'integer'}
                   'consumers': {'type':'integer'}
                  },
                 'additionalProperties': False
@@ -287,12 +297,11 @@ other APIs require the caller to have admin role.
               "secrets": 10,
               "orders": 20,
               "containers": 10,
-              "transport_keys": 10,
               "consumers": -1
             }
           }
 
-* List all project quotas (admin only)
+* List all project quotas (service-admin only)
 
   * Lists all configured project level resource quotas across all users for all
     projects. If a project does not have project specific quotas configured,
@@ -302,7 +311,16 @@ other APIs require the caller to have admin role.
     configured value in that project. The returned list will be sorted
     by create date, and support standard limit/offset paging.
 
-  * GET /v1/project-quotas?limit=x&offset=y (Admin only)
+    The standard paging support includes adding three fields in the
+    response body, when applicable.
+
+        * "total": showing the number of project-quotas records
+
+        * "next": giving a URL to the next page of records
+
+        * "prev": giving a URL to the previous page of records
+
+  * GET /v1/project-quotas?limit=x&offset=y (service-admin only)
 
   * Normal http response code(s)
     200 OK
@@ -346,7 +364,6 @@ other APIs require the caller to have admin role.
                              'secrets': {'type': 'integer'},
                              'orders': {'type': 'integer'},
                              'containers': {'type': 'integer'},
-                             'transport_keys': {'type': 'integer'},
                              'consumers': {'type': 'integer'}
                           }
                      }
@@ -359,7 +376,7 @@ other APIs require the caller to have admin role.
 
     * Example 1::
 
-        An admin user listing all the project quotas
+        A service-admin user listing all the project quotas
 
         Request:
 
@@ -381,7 +398,6 @@ other APIs require the caller to have admin role.
                      "secrets": 2000,
                      "orders": 0,
                      "containers": -1,
-                     "transport_keys": 100,
                      "consumers": null
                  }
               },
@@ -391,15 +407,58 @@ other APIs require the caller to have admin role.
                      "secrets": 200,
                      "orders": 100,
                      "containers": -1,
-                     "transport_keys": 0,
                      "consumers": null
                  }
               },
-            ]
+            ],
+            "total" : 30,
           }
 
 
-* Get quotas for a specific project (admin only)
+    * Example 2::
+
+        A service-admin user listing all the project quotas with paging
+
+        Request:
+
+          GET /v1/project-quotas?limit=2&offset=6
+
+          X-Auth-Token:<token>
+
+        Response:
+
+          200 OK
+
+          Content-Type: application/json
+
+          {
+            "project_quotas": [
+              {
+                "project_id": "1234",
+                "project_quotas": {
+                     "secrets": 2000,
+                     "orders": 0,
+                     "containers": -1,
+                     "consumers": null
+                 }
+              },
+              {
+                "project_id": "5678",
+                "project_quotas": {
+                     "secrets": 200,
+                     "orders": 100,
+                     "containers": -1,
+                     "consumers": null
+                 }
+              },
+            ],
+            "total" : 30,
+            "next": "http://localhost:9311/v1/project_quotas?limit=2&offset=8",
+            "prev": "http://localhost:9311/v1/project_quotas?limit=2&offset=4"
+          }
+
+
+* Get quotas for a specific project (service-admin only)
 
   * Returns a set of configured resource quotas for the specified project.
     If no project specific quota values have been configured (or if the
@@ -441,7 +500,6 @@ other APIs require the caller to have admin role.
                     'secrets': {'type': 'integer'},
                     'orders': {'type': 'integer'},
                     'containers': {'type': 'integer'},
-                    'transport_keys': {'type': 'integer'},
                     'consumers': {'type': 'integer'}
                   }
              }
@@ -468,13 +526,12 @@ other APIs require the caller to have admin role.
               "secrets": 10,
               "orders": 20,
               "containers": -1,
-              "transport_keys": null,
               "consumers": 10
             }
           }
 
 
-* Update/Set quotas for a specific project (admin only)
+* Update/Set quotas for a specific project (service-admin only)
 
   * Creates or updates the configured resource quotas for the specified
     project. It is not required to specify limits for all Barbican resources.
@@ -514,7 +571,6 @@ other APIs require the caller to have admin role.
                      'secrets': {'type': 'integer'},
                      'orders': {'type': 'integer'},
                      'containers': {'type': 'integer'},
-                     'transport_keys': {'type': 'integer'},
                      'consumers': {'type': 'integer'}
                   }
              }
@@ -550,7 +606,7 @@ other APIs require the caller to have admin role.
           204 OK
 
 
-* Delete quotas for a specific project (admin only)
+* Delete quotas for a specific project (service-admin only)
 
   * Deletes the configured resource quotas for the specified
     project.  After this call succeeds, the default resource quotas will be
@@ -610,8 +666,9 @@ other APIs require the caller to have admin role.
 
 * Policy changes
 
-  For all admin-only APIs, the caller is expected to have a barbican admin
-  role. The check for this will be added to the Barbican policy.json
+  For all service-admin-only APIs, the caller is expected to have a barbican
+  key-manager:service-admin role. The check for this will be added to the
+  Barbican policy.json file.
 
 
 Once implemented and enforced, all Barbican resource creation API could return
@@ -674,7 +731,7 @@ Quota commands that a regular non-admin barbican user can make:
   barbican quota show
 
 
-Quota commands that only a barbican admin can make
+Quota commands that only a barbican service-admin can make
 
 * List the default quotas applicable to all new projects
 
