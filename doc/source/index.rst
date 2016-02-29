@@ -4,6 +4,14 @@
 Barbican Project Specifications
 ===============================
 
+Newton approved specs:
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   specs/newton/*
+
 Mitaka approved specs:
 
 .. toctree::
