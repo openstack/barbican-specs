@@ -5,7 +5,7 @@
  http://creativecommons.org/licenses/by/3.0/legalcode
 
 ===================================================
-Add PUT Support For the Generic Containers Resource
+Add Support For Mutable Generic Containers Resource
 ===================================================
 
 The URL of the associated launchpad blueprint:
@@ -43,14 +43,21 @@ Attempts to update containers of other types will be rejected.
 Proposed Change
 ===============
 
-This blueprint calls for adding PUT support for containers. The API impact
-section details what this call looks like relative to clients. The actual
-service implementation is straightforward though, allowing clients to provide
-a revised list of key-names to secret refs that are then updated for a given
-'generic' container.
+This blueprint calls for adding new sub-resources to generic containers.
+The API impact section details what these calls look like relative to clients.
+The actual service implementation is straightforward though, allowing clients
+to provide additional secrets or delete individual secrets by sending a POST or
+DELETE request to the sub-resources in a 'generic' container.
 
 Alternatives
 ------------
+
+A previously-accepted but not implemented version of this blueprint called
+for adding PUT support for containers whereby clients must specify all secrets
+to be held in the container. For example when adding a secret to an existing
+container the PUT body would have to list all existing secrets in addition to
+the new secret. However, during the Newton cycle we discussed that this could
+be error-prone due to potential race conditions.
 
 Utilize a PATCH call to provide partial updates to containers. This adds
 complexity to API processing, especially if JSONPatch [1] is used. If this
@@ -64,62 +71,46 @@ None.
 REST API impact
 ---------------
 
-The following documentation specifies the proposed container PUT call, used to
-entirely replace an existing 'generic'-type container.
+The following documentation specifies the proposed container sub-resource
+calls, used to add or remove a secret from  an existing 'generic'-type
+container.
 
 The access policy for this call is similar to the container resource's POST
 call, so users with the Barbican 'admin' or 'creator' role can modify
-containers. This blueprint would also call for adding a new 'write' access
-control list policy group, with users added to this group allowed to also
-modify the container.
+containers.
 
+POST /v1/containers/{container_uuid}/secrets
+############################################
 
-PUT /v1/containers/{container_uuid}
-###################################
-
-Replace an existing container
-
-The uploaded container information replaces the existing container's. This
-operation is only supported for 'generic'-type containers.
+Add a secret to an existing container.  This is only supported on generic
+containers.
 
 Request Attributes
 ******************
 
-+-------------+--------+-----------------------------------------------------------+
-| Name        | Type   | Description                                               |
-+=============+========+===========================================================+
-| name        | string | (optional) Human readable name for identifying your       |
-|             |        | container                                                 |
-+-------------+--------+-----------------------------------------------------------+
-| type        | string | Type of container, defaults to 'generic'. As only generic |
-|             |        | container types would be modifiable via this proposal,    |
-|             |        | providing a a value here other than 'generic' would fail  |
-+-------------+--------+-----------------------------------------------------------+
-| secret_refs | list   | A list of dictionaries containing references to secrets,  |
-|             |        | which entirely replace the existing references.           |
-+-------------+--------+-----------------------------------------------------------+
++------------+--------+------------------------------------------------------------+
+| Name       | Type   | Description                                                |
++============+========+============================================================+
+| name       | string | (optional) Human readable name for identifying your secret |
+|            |        | within the container.                                      |
++------------+--------+------------------------------------------------------------+
+| secret_ref | uri    | (required) Full URI reference to an existing secret.       |
++------------+--------+------------------------------------------------------------+
 
 Request:
 ********
 
-.. code-block:: none
+.. code-block:: json
 
-    PUT /v1/containers/{container_uuid}
+    POST /v1/containers/{container_uuid}/secrets
     Headers:
         X-Project-Id: {project_id}
 
     Content:
     {
-        "type": "generic",
-        "name": "container name",
-        "secret_refs": [
-            {
-                "name": "private_key",
-                "secret_ref": "https://{barbican_host}/v1/secrets/{secret_uuid}"
-            }
-        ]
+        "name": "private_key",
+        "secret_ref": "https://{barbican_host}/v1/secrets/{secret_uuid}"
     }
-
 
 Response:
 *********
@@ -145,8 +136,68 @@ well, especially in regards to the secret references that can be provided.
 +======+=============================================================================+
 | 201  | Successful update of the container                                          |
 +------+-----------------------------------------------------------------------------+
+| 400  | Missing secret_ref                                                          |
++------+-----------------------------------------------------------------------------+
 | 401  | Invalid X-Auth-Token or the token doesn't have permissions to this resource |
 +------+-----------------------------------------------------------------------------+
+
+DELETE /v1/containers/{container_uuid}/secrets
+##############################################
+
+Remove a secret from a container.  This is only supported on generic
+containers.
+
+Request:
+********
+
+.. code-block:: json
+
+   DELETE /v1/containers/{container_uuid}/secrets
+   Headers:
+       X-Project-Id: {project_id}
+
+   Content:
+   {
+       "name": "private key",
+       "secret_ref": "https://{barbican_host}/v1/secrets/{secret_uuid}"
+   }
+
+Response:
+*********
+
+.. code-block:: none
+
+   204 No Content
+
+HTTP Status Codes
+*****************
+
++------+-----------------------------------------------------------------------------+
+| Code | Description                                                                 |
++======+=============================================================================+
+| 204  | Successful removal of the secret from the container.                        |
++------+-----------------------------------------------------------------------------+
+| 400  | Missing secret_ref                                                          |
++------+-----------------------------------------------------------------------------+
+| 401  | Invalid X-Auth-Token or the token doesn't have permissions to this resource |
++------+-----------------------------------------------------------------------------+
+| 404  | Specified secret_ref is not found in the container.                         |
++------+-----------------------------------------------------------------------------+
+
+Alternative
+***********
+
+Alternatively, we could define the removal of a secret as a call to a resource
+that includes the secret_uuid as part of the URI, for example:
+
+.. code-block:: none
+
+   DELETE /v1/containers/{container_uuid}/secrets/{secret_uuid}
+
+However, this would require the client to parse out UUIDs from secret URIs to
+be able to construct the correct URI for deletion.  Because of this reason
+the DELETE with a body described above should be implemented instead.
+
 
 Security impact
 ---------------
@@ -158,26 +209,30 @@ type containers can be modified hence sensitive grouped secrets such as
 see the Performance Impact section for advice on rate limiting calls such as
 the one proposed in this blueprint to avoid denial of service attacks.
 
+
 Notifications & Audit Impact
 ----------------------------
 
-The proposed new PUT container request should be logged and audited the same
-as any other REST call to Barbican, and therefore does not need to be called
-out specifically in this blueprint.
+The proposed new POST and DELETE container request should be logged and audited
+the same as any other REST call to Barbican, and therefore does not need to be
+called out specifically in this blueprint.
+
 
 Other end user impact
 ---------------------
 
 The Barbican Python client needs to be modified as well.
 
+
 Performance Impact
 ------------------
 
 As no cryptographic operations are needed for this blueprint, with only
 database references to secrets changed, the proposal should have minimal
-impact on performance. However, the call itself if not quota limited, so
+impact on performance. However, the call itself is not quota limited, so
 deployers might wish to utilize a rate limiting application in front of their
 Barbican API nodes, such as Repose [2].
+
 
 Other deployer impact
 ---------------------
@@ -186,6 +241,7 @@ No configuration or dependency changes are required to utilize the proposed
 operation, but as mentioned in the Performance Impact section above if rate
 limiting is deployed, the PUT operation on the containers resource should be
 limited as well to avoid denial of service attacks.
+
 
 Developer impact
 ----------------
@@ -210,22 +266,16 @@ Work Items
 
 The following work items are required to implement this blueprint:
 
-1) Override the 'update()' method on the container class
-   `barbican.model.models.Container` to update from the provided dict of
-   provided update attributes, including a list of key/secret dicts to update
-   on the container.
+1) Update container controllers to add the new POST and DELETE sub-resources.
 
-2) Add `on_put()` method to the containers controller class
-   `barbican.api.controllers.containers.ContainerController`.
+2) Add a new policy entry to `etc/policy.json` for the new operations
 
-3) Add a new policy entry to `etc/policy.json` for `container:put`.
-
-4) Add a positive test to modify a 'generic'-type container, and a negative
+3) Add a positive test to modify a 'generic'-type container, and a negative
    test prove that a non-'generic'-type container cannot be modified.
 
-5) Add Barbican Python client support for the new feature.
+4) Add Barbican Python client support for the new feature.
 
-6) Add sphinx documentation for the new PUT action.
+5) Add sphinx documentation for the new POST and DELETE actions.
 
 
 Dependencies
