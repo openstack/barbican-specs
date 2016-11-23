@@ -521,7 +521,7 @@ Other deployer impact
 This new feature is going to be disabled by default. There is new flag added to
 enable i.e. `enable_multiple_secret_stores` in `secretstore` section of
 barbican configuration. Also for multiple plugins support, deployer will need
-to define supprted plugins configuration as mentioned above (different from way
+to define supported plugins configuration as mentioned above (different from way
 currently supported).
 
 There is no migration needed and deployment should work with default
