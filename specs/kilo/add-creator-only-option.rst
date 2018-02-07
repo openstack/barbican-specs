@@ -14,7 +14,7 @@ Problem Description
 -------------------
 
 This is a companion spec to the add-per-secret-policy spec.  That spec proposed
-a mechanism for allowing users outside the the secrets project to access a
+a mechanism for allowing users outside the secrets project to access a
 secret/container.  This mechanism involved storing access control data
 in the database for each secret/container.
 

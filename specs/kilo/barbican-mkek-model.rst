@@ -91,7 +91,7 @@ provide its reference to the MKEK as the wrapping key so the HSM may unwrap it.
 An unwrapped DEK, provided by the project, will be sent to the HSM and then
 retrieved, wrapped by the projects KEK. This wrapped DEK will be stored in the
 local Barbican database. The unwrapped DEK and KEK will now be removed from the
-HSM. This logic will placed within the the encrypt() interface method.
+HSM. This logic will placed within the encrypt() interface method.
 
 Project Data Encryption Key (DEK) retrieval.
 A project wrapped DEK (its encrypted secret) will be retrieved from Barbican's

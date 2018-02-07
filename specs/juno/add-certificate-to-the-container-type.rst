@@ -27,7 +27,7 @@ not be distinguishable.
 Proposed Change
 ===============
 
-Add the `certificate` option for containers. This augments the the current type attribute on the containers resource and data model to accept `certificate` as a valid option.
+Add the `certificate` option for containers. This augments the current type attribute on the containers resource and data model to accept `certificate` as a valid option.
 
 Alternatives
 ------------
