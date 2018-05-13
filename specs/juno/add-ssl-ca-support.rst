@@ -143,7 +143,7 @@ the Juno or K releases. It does not let projects upload and execute custom
 code, but rather calls back to Barbican to perform its tasks.
 
 Lower level frameworks such as machinist
-(https://pypi.python.org/pypi/machinist/0.1) can operate state machines as
+(https://pypi.org/project/machinist/0.1) can operate state machines as
 defined via Python objects. Like TaskFlow this might be best run as a
 process separate from the Barbican workers. This framework seemed less
 flexible than TaskFlow.
