@@ -4,6 +4,14 @@
 Barbican Project Specifications
 ===============================
 
+Stein approved specs:
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   specs/stein/*
+
 Pike approved specs:
 
 .. toctree::
