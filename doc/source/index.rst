@@ -6,11 +6,14 @@ Barbican Project Specifications
 
 Stein approved specs:
 
-.. toctree::
-   :glob:
-   :maxdepth: 1
-
-   specs/stein/*
+..
+  disabled to not break builds, once first spec is added,
+  this needs enabling.
+  .. toctree::
+     :glob:
+     :maxdepth: 1
+  
+     specs/stein/*
 
 Pike approved specs:
 
