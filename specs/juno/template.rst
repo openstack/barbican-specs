@@ -160,7 +160,7 @@ consider include:
   of this include launching subprocesses for each connection, or entity
   expansion attacks in XML.
 
-* Does this change change the need for auditing in any way?
+* Does this change the need for auditing in any way?
 
 For more detailed guidance, please see the OpenStack Security Guidelines as
 a reference (https://wiki.openstack.org/wiki/Security/Guidelines).  These
