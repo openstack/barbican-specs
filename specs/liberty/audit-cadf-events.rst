@@ -131,7 +131,7 @@ file which is going to be similar to files described in following pycadf samples
 https://github.com/openstack/pycadf/tree/master/etc/pycadf
 
 For asynchronous task processing workers, audit event is constructed using task related
-data. It can be be implemented as a decorator which can be added to each task common
+data. It can be implemented as a decorator which can be added to each task common
 methods (handle_processing, handle_success and handle_error) or can be added on base task
 process method. This audit event is going to be published as notification to same queue
 which is used by audit middleware as well.
