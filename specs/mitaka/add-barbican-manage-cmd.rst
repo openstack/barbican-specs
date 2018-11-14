@@ -198,12 +198,12 @@ Documentation Impact
 A new barbican-manage command user guide will be added, which should include
 new user guide for database migration subcommands and user guide of
 pkcs11-related subcommands modified from existing
-http://docs.openstack.org/developer/barbican/api/userguide/pkcs11keygeneration.html
+https://docs.openstack.org/developer/barbican/api/userguide/pkcs11keygeneration.html
 
 
 References
 ==========
 
-.. [#] http://docs.openstack.org/developer/keystone/man/keystone-manage.html
-.. [#] http://docs.openstack.org/developer/nova/man/nova-manage.html
+.. [#] https://docs.openstack.org/developer/keystone/man/keystone-manage.html
+.. [#] https://docs.openstack.org/developer/nova/man/nova-manage.html
 .. [#] https://governance.openstack.org/reference/tags/assert_follows-standard-deprecation.html
