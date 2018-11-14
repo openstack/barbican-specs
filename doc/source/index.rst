@@ -4,6 +4,17 @@
 Barbican Project Specifications
 ===============================
 
+Train approved specs:
+
+..
+  disabled to not break builds, once first spec is added,
+  this needs enabling.
+  .. toctree::
+     :glob:
+     :maxdepth: 1
+
+     specs/train/*
+
 Stein approved specs:
 
 ..
