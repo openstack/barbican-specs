@@ -21,7 +21,7 @@ The Entity Models in ``barbicanclient`` should be refactored to provide a
 more Pythonic api.  This refactor will make the existing Entities consistent
 with the recently approved Containers blueprint. [1]_
 
-.. [1] http://specs.openstack.org/openstack/barbican-specs/specs/juno/client-add-containers.html
+.. [1] https://specs.openstack.org/openstack/barbican-specs/specs/juno/client-add-containers.html
 
 Proposed Change
 ===============
@@ -110,7 +110,7 @@ We could continue to use the objects as they currently exist.
 Also note that the Orders functionality will need to be revisited once
 the Typed Orders implementation lands. [2]_
 
-.. [2] http://specs.openstack.org/openstack/barbican-specs/specs/juno/api-orders-add-more-types.html
+.. [2] https://specs.openstack.org/openstack/barbican-specs/specs/juno/api-orders-add-more-types.html
 
 Data model impact
 -----------------
@@ -188,4 +188,4 @@ References
 ==========
 
 Containers in the Client etherpad: https://etherpad.openstack.org/p/python-barbicanclient-containers
-Containers Blueprint: http://specs.openstack.org/openstack/barbican-specs/specs/juno/client-add-containers.html
+Containers Blueprint: https://specs.openstack.org/openstack/barbican-specs/specs/juno/client-add-containers.html

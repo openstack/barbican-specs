@@ -256,8 +256,8 @@ https://github.com/cloudkeep/barbican/wiki/Barbican-Options:-authentication-with
 References
 ==========
 
-* http://docs.openstack.org/developer/oslo.messaging/notification_listener.html
+* https://docs.openstack.org/developer/oslo.messaging/notification_listener.html
 
-* http://docs.openstack.org/developer/oslo.messaging/index.html
+* https://docs.openstack.org/developer/oslo.messaging/index.html
 
-* http://docs.openstack.org/developer/oslo.messaging/notification_listener.html#oslo.messaging.MessageHandlingServer
+* https://docs.openstack.org/developer/oslo.messaging/notification_listener.html#oslo.messaging.MessageHandlingServer

@@ -105,7 +105,7 @@ attempt.
 To implement this scheduling process, this blueprint proposes using the Oslo
 periodic task feature, described here:
 
-http://docs.openstack.org/developer/oslo-incubator/api/openstack.common.periodic_task.html
+https://docs.openstack.org/developer/oslo-incubator/api/openstack.common.periodic_task.html
 
 A working example implementation with an older code base is shown here:
 

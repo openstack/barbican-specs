@@ -32,7 +32,7 @@ Keystone and Barbican
 The following is an example of implementing a json-home type of response from
 Keystone
 (documented here:
-http://docs.openstack.org/api/openstack-identity-service/2.0/content/\
+https://docs.openstack.org/api/openstack-identity-service/2.0/content/\
 Versions-d1e472.html)::
 
     {
@@ -43,7 +43,7 @@ Versions-d1e472.html)::
                 "links": [
                     {
                         "rel": "self",
-                        "href": "http://identity.api.openstack.org/v1.0"
+                        "href": "https://identity.api.openstack.org/v1.0"
                     }
                 ],
                 "media-types": {
@@ -65,7 +65,7 @@ Versions-d1e472.html)::
                 "links": [
                     {
                         "rel": "self",
-                        "href": "http://identity.api.openstack.org/v1.1"
+                        "href": "https://identity.api.openstack.org/v1.1"
                     }
                 ],
                 "media-types": {
@@ -87,7 +87,7 @@ Versions-d1e472.html)::
                 "links": [
                     {
                         "rel": "self",
-                        "href": "http://identity.api.openstack.org/v2.0"
+                        "href": "https://identity.api.openstack.org/v2.0"
                     }
                 ],
                 "media-types": {
@@ -131,12 +131,12 @@ provided in response such as per this Keystone example::
                     "rel": "self"
                 },
                 {
-                    "href": "http://docs.openstack.org/api/openstack-identity-service/2.0/content/",
+                    "href": "https://docs.openstack.org/api/openstack-identity-service/2.0/content/",
                     "type": "text/html",
                     "rel": "describedby"
                 },
                 {
-                    "href": "http://docs.openstack.org/api/openstack-identity-service/2.0/identity-dev-guide-2.0.pdf",
+                    "href": "https://docs.openstack.org/api/openstack-identity-service/2.0/identity-dev-guide-2.0.pdf",
                     "type": "application/pdf",
                     "rel": "describedby"
                 }

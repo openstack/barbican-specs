@@ -52,7 +52,7 @@ not include the zone designation will result in an error response with status
 code 400. Values that specify a time offset from UTC will also result in a 400
 error response even if the offset is zero to specify UTC.
 
-.. _Pagination, Filtering, and Sorting: http://git.openstack.org/cgit/openstack/api-wg/tree/guidelines/pagination_filter_sort.rst
+.. _Pagination, Filtering, and Sorting: https://git.openstack.org/cgit/openstack/api-wg/tree/guidelines/pagination_filter_sort.rst
 
 Alternatives
 ------------
@@ -178,7 +178,7 @@ References
 
 API Working Group's Guideline for Pagination, Filtering and Sorting:
 
-http://git.openstack.org/cgit/openstack/api-wg/tree/guidelines/pagination_filter_sort.rst
+https://git.openstack.org/cgit/openstack/api-wg/tree/guidelines/pagination_filter_sort.rst
 
 ISO 8601 in Wikipedia:
 

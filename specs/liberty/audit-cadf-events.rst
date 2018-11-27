@@ -245,10 +245,10 @@ References
   http://www.dmtf.org/sites/default/files/standards/documents/DSP2038_1.0.0.pdf
  
 * Audit Middleware
-  http://docs.openstack.org/developer/keystonemiddleware/audit.html
+  https://docs.openstack.org/developer/keystonemiddleware/audit.html
 
 * PyCADF developer docs
-  http://docs.openstack.org/developer/pycadf/
+  https://docs.openstack.org/developer/pycadf/
 
 * CADF event model and taxonomies
   https://wiki.openstack.org/w/images/e/e1/Introduction_to_Cloud_Auditing_using_CADF_Event_Model_and_Taxonomy_2013-10-22.pdf
