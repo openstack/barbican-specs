@@ -180,7 +180,7 @@ Performance Impact
 ------------------
 
 Since this is a recurring find and delete operation on a database,
-this may take up a great ammount of compute cycles. It will be up to
+this may take up a great amount of compute cycles. It will be up to
 the admin/operator of Barbican to find the best time to run,
 what interval to run the job, and configure how much to delete.
 The admin will have to customize the cron job entry to their liking.
