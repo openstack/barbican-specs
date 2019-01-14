@@ -43,7 +43,7 @@ current status of blueprints. For more information, see::
 
 For more information about working with gerrit, see::
 
-  http://docs.openstack.org/infra/manual/developers.html#development-workflow
+  https://docs.openstack.org/infra/manual/developers.html#development-workflow
 
 To validate that the specification is syntactically correct (i.e. get more
 confidence in the Jenkins result), please execute the following command::
