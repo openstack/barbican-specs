@@ -133,7 +133,7 @@ Documentation Impact
 ====================
 
 Documenting this feature for setting up development and testing environments
-could be useful but is not requried.
+could be useful but is not required.
 
 References
 ==========
