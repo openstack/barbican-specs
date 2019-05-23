@@ -8,13 +8,9 @@
 Example Spec - The title of your blueprint
 ==========================================
 
-Include the URL of your launchpad blueprint:
+Include the URL of your Storyboard story:
 
-https://blueprints.launchpad.net/barbican/+spec/example
-
-Include the URL of your client blueprint:
-
-https://blueprints.launchpad.net/python-barbicanclient/example
+https://storyboard.openstack.org/#!/story/XXXXXX
 
 Introduction paragraph -- why are we doing anything? A single paragraph of
 prose that operators can understand.
@@ -24,10 +20,6 @@ Some notes about using this template:
 * Your spec should be in ReSTructured text, like this template.
 
 * Please wrap text at 79 columns.
-
-* The filename in the git repository should match the launchpad URL, for
-  example a URL of: https://blueprints.launchpad.net/barbican/+spec/awesome-thing
-  should be named awesome-thing.rst
 
 * Please do not delete any of the sections in this template.  If you have
   nothing to say for a whole section, just write: None
@@ -108,7 +100,7 @@ Each API method which is either added or changed should have the following
 
 * Specification for the method
 
-  * A description of what the method does suitable for use in
+  * A description of what the method does, suitable for use in
     user documentation
 
   * Method type (POST/PUT/GET/DELETE)
@@ -137,9 +129,6 @@ Each API method which is either added or changed should have the following
 
 * Discuss any policy changes, and discuss what things a deployer needs to
   think about when defining their policy.
-
-Example JSON schema definitions can be found in the Nova tree
-https://git.openstack.org/cgit/openstack/nova/tree/nova/api/openstack/compute/schemas/v3
 
 Note that the schema should be defined as restrictively as
 possible. Parameters which are required should be marked as such and
@@ -196,11 +185,8 @@ the OpenStack unified clients as well as the soon to be deprecated Barbican clie
 Other end user impact
 ---------------------
 
-Aside from the API, are there other ways a user will interact with this
-feature?
-
-* Does this change have an impact on python-novaclient? What does the user
-  interface there look like?
+Aside from the API, CLI and Python clients are there other ways a user will
+interact with this feature?
 
 Performance Impact
 ------------------
@@ -211,16 +197,10 @@ pattern of existing code.
 
 Examples of things to consider here include:
 
-* A periodic task might look like a small addition but if it calls conductor or
-  another service the load is multiplied by the number of nodes in the system.
-
-* Scheduler filters get called once per host for every instance being created,
-  so any latency they introduce is linear with the size of the system.
-
 * A small change in a utility function or a commonly used decorator can have a
   large impacts on performance.
 
-* Calls which result in a database queries (whether direct or via conductor)
+* Calls which result in a database queries (whether direct or via barbican-worker)
   can have a profound impact on performance when called in critical sections of
   the code.
 
@@ -234,7 +214,7 @@ Discuss things that will affect how you deploy and configure OpenStack
 that have not already been mentioned, such as:
 
 * What config options are being added? Should they be more generic than
-  proposed (for example a flag that other hypervisor drivers might want to
+  proposed (for example a flag that other Secret Stores might want to
   implement as well)? Are the default values ones which will work well in
   real deployments?
 
@@ -245,11 +225,7 @@ that have not already been mentioned, such as:
 
 * Please state anything that those doing continuous deployment, or those
   upgrading from the previous release, need to be aware of. Also describe
-  any plans to deprecate configuration values or features.  For example, if we
-  change the directory name that instances are stored in, how do we handle
-  instance directories created before the change landed?  Do we move them?  Do
-  we have a special case in the code? Do we assume that the operator will
-  recreate all the instances in their cloud?
+  any plans to deprecate configuration values or features.
 
 Developer impact
 ----------------
@@ -257,8 +233,8 @@ Developer impact
 Discuss things that will affect other developers working on OpenStack,
 such as:
 
-* If the blueprint proposes a change to the driver API, discussion of how
-  other hypervisors would implement the feature is required.
+* If the blueprint proposes a change to the Secrets API, discussion of how
+  other projects might be affected.
 
 
 Implementation
@@ -290,12 +266,11 @@ but we're mostly trying to understand the timeline for implementation.
 Dependencies
 ============
 
-* Include specific references to specs and/or blueprints in nova, or in other
+* Include specific references to specs and/or blueprints in barbican, or in other
   projects, that this one either depends on or is related to.
 
 * If this requires functionality of another project that is not currently used
-  by Nova (such as the glance v2 API when we previously only required v1),
-  document that fact.
+  by Barbican document that fact.
 
 * Does this feature require any new library dependencies or code otherwise not
   included in OpenStack? Or does it depend on a specific version of library?
@@ -318,9 +293,9 @@ party testing, gate enhancements, etc).
 Documentation Impact
 ====================
 
-What is the impact on the docs team of this change? Some changes might require
-donating resources to the docs team to have the documentation updated. Don't
-repeat details discussed above, but please reference them here.
+What is the impact on the documentation of this change? Some changes might
+require a significant documentation effort.  Don't repeat details discussed
+above, but please reference them here.
 
 
 References
