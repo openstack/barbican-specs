@@ -15,17 +15,6 @@ Train approved specs:
 
      specs/train/*
 
-Stein approved specs:
-
-..
-  disabled to not break builds, once first spec is added,
-  this needs enabling.
-  .. toctree::
-     :glob:
-     :maxdepth: 1
-  
-     specs/stein/*
-
 Pike approved specs:
 
 .. toctree::
