@@ -100,7 +100,7 @@ Request Attributes
 Request:
 ********
 
-.. code-block:: json
+.. code-block:: none
 
     POST /v1/containers/{container_uuid}/secrets
     Headers:
@@ -115,7 +115,7 @@ Request:
 Response:
 *********
 
-.. code-block:: json
+.. code-block:: none
 
     {
         "container_ref": "https://{barbican_host}/v1/containers/{container_uuid}"
@@ -150,7 +150,7 @@ containers.
 Request:
 ********
 
-.. code-block:: json
+.. code-block:: none
 
    DELETE /v1/containers/{container_uuid}/secrets
    Headers:

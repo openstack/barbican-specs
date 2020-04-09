@@ -78,19 +78,19 @@ Examples:
 List secrets expiring in the next week (assuming current time is June 8, 2016
 20:00 UTC) and sort by secrets expiring soonest:
 
-.. code-block:: json
+.. code-block:: none
 
    GET /v1/secrets?expiration=gt:2016-06-08T20:00:00Z,lt:2016-06-15T20:00:00Z&sort=expiration:asc
 
 List secrets created in the previous week assuming same current time as above:
 
-.. code-block:: json
+.. code-block:: none
 
    GET /v1/secrets?created=gt:2016-06-01T20:00:00Z,lt:2016-06-08T20:00:00Z
 
 List secrets updated in the previous week assuming same current time as above:
 
-.. code-block:: json
+.. code-block:: none
 
    GET /v1/secrets?updated=gt:2016-06-01T20:00:00Z,lt:2016-06-08T20:00:00Z
 

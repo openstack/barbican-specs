@@ -111,6 +111,8 @@ the resrouce_id refers to an image.
 Request
 +++++++
 
+::
+
     POST /v1/secrets/{secret_id}/consumers
     Headers:
         X-Auth-Token: {token}
@@ -157,12 +159,17 @@ Parameters
 Request
 +++++++
 
+::
+
     GET /v1/secrets/{secret_id}/consumers
     Headers:
         X-Auth-Token: {token}
 
 OK Response
 +++++++++++
+
+::
+
 
     200 OK
 
@@ -198,6 +205,8 @@ to access this secret.
 Request
 +++++++
 
+::
+
      DELETE v1/secrets/{secret_id}/consumers/{resource_id}
 
 Responses
@@ -222,7 +231,7 @@ Security impact
 Because the consumers are stored in the database, there is the possibility
 that a bad actor could add many consumers to try to fill the database disk
 space.  Secret Consumers should be limited to the same quota as Container
-Consumers to mitigate this risk. For example:
+Consumers to mitigate this risk. For example::
 
     [quota]
     quota_consumers=10000
@@ -239,7 +248,7 @@ Python and Command Line Client Impact
 -------------------------------------
 
 The Secret class in python-barbicanclient should be updated to add new
-methods such as:
+methods such as::
 
     class Secret(...):
         ...
@@ -253,7 +262,7 @@ methods such as:
 Both methods should raise appropriate exceptions when the API returns an error.
 Additionally, the Secret.delete() method should be updated to take a new *force*
 parameter and throw an exception when delete() is called with force=False,
-and the secret still has consumers:
+and the secret still has consumers::
 
     class Secret(...):
         ...
@@ -261,7 +270,7 @@ and the secret still has consumers:
         def delete(self, force=False):
             ...
 
-The CLI client should be changed to add new consumer options, such as:
+The CLI client should be changed to add new consumer options, such as::
 
     openstack secret consumer add --service-type=image --resource-type=image \
         --resource-id=XXXX-XXXX-XXXX-XXXX
@@ -269,12 +278,12 @@ The CLI client should be changed to add new consumer options, such as:
     openstack secret consumer remove --service-type=image --resource-type=image \
         --resource-id=XXXX-XXXX-XXXX-XXXX
 
-The secret delete command should be changed to take a *--force* parameter:
+The secret delete command should be changed to take a *--force* parameter::
 
     openstack secret delete --force {secret_uuid}
 
 This command should return an error when a secret has one or more consumers
-and the --force flag is not used:
+and the --force flag is not used::
 
     openstack secret delete {secret_uuid_with_consumers}
     ERROR: Secret has one or more consumers.  Use --force to delete anyway.
