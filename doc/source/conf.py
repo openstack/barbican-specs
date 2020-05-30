@@ -35,7 +35,7 @@ extensions = ['sphinx.ext.autodoc',
              ]
 
 # Feed configuration for yasfb
-feed_base_url = 'http://specs.openstack.org/openstack/barbican-specs'
+feed_base_url = 'https://specs.openstack.org/openstack/barbican-specs'
 feed_author = 'OpenStack Barbican Team'
 
 todo_include_todos = True
@@ -89,10 +89,16 @@ add_module_names = False
 show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'native'
 
 # A list of ignored prefixes for module index sorting.
 modindex_common_prefix = ['barbican-specs.']
+
+# openstackdocstheme options
+openstackdocs_repo_name = 'openstack/barbican-specs'
+openstackdocs_auto_name = False
+openstackdocs_bug_project = 'barbican'
+openstackdocs_bug_tag = ''
 
 # -- Options for man page output ----------------------------------------------
 man_pages = []
