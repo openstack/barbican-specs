@@ -332,10 +332,10 @@ Implementation
 Assignee(s)
 
 Primary assignee:
-  Douglas Mendizábal (Freenode: redrobot) <dmendiza@redhat.com>
+  Douglas Mendizábal (OFTC: redrobot) <dmendiza@redhat.com>
 
 Other contributors:
-  Moisés Guimarães (Freenode: moguimar) <moguimar@redhat.com>
+  Moisés Guimarães (OFTC: moguimar) <moguimar@redhat.com>
 
 Work Items
 ----------
