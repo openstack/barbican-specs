@@ -99,9 +99,9 @@ Body Parameters
 | resource_id         | string | Unique identifier for the resource using this secret.  |
 +---------------------+--------+--------------------------------------------------------+
 
-Barbican will consider the resource_id to be a unique consumer.  This assumes
-that resource_id is a UUID, and that duplicate IDs for different projects
-is not likely to ever happen in a single cloud.
+Barbican will consider the resource_id to be a unique together with the secret,
+service and resource_type. If the resource_id is a UUID, duplicate IDs for
+different projects are not likely to ever happen in a single cloud.
 
 resource_type should be meaningful to the individual projects, and should
 be used to identify the resource in the consuming service.  For example,
@@ -196,7 +196,7 @@ Other Responses
 |      |             not have the appropriate role/scope                    |
 +------+--------------------------------------------------------------------+
 
-DELETE /v1/secrets/{secret_id}/consumers/{resource_id}
+DELETE /v1/secrets/{secret_id}/consumers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Delete a consumer.  ie. The resource is being deleted and it longer needs
@@ -207,7 +207,16 @@ Request
 
 ::
 
-     DELETE v1/secrets/{secret_id}/consumers/{resource_id}
+    DELETE v1/secrets/{secret_id}/consumers
+    Headers:
+        X-Auth-Token: {token}
+        X-Content-Type: application/json
+
+    {
+        "service": "image",
+        "resource_type": "images",
+        "resource_id": "{image_id}"
+    }
 
 Responses
 +++++++++
@@ -250,24 +259,24 @@ Python and Command Line Client Impact
 The Secret class in python-barbicanclient should be updated to add new
 methods such as::
 
-    class Secret(...):
+    class SecretManager(...):
         ...
 
-        def add_consumer(self, service_type, resource_type, resource_id):
+        def register_consumer(self, secret_ref, service_type, resource_type, resource_id):
             ...
 
-        def remove_consumer(self, service_type, resource_type, resource_id):
+        def remove_consumer(self, secret_ref, service_type, resource_type, resource_id):
             ...
 
 Both methods should raise appropriate exceptions when the API returns an error.
-Additionally, the Secret.delete() method should be updated to take a new *force*
-parameter and throw an exception when delete() is called with force=False,
-and the secret still has consumers::
+Additionally, the SecretManager.delete() method should be updated to take a new
+*force* parameter and throw an exception when delete() is called with
+force=False and the secret still has consumers::
 
-    class Secret(...):
+    class SecretManager(...):
         ...
 
-        def delete(self, force=False):
+        def delete(self, container_ref, force=False):
             ...
 
 The CLI client should be changed to add new consumer options, such as::
@@ -336,6 +345,7 @@ Primary assignee:
 
 Other contributors:
   Moisés Guimarães (OFTC: moguimar) <moguimar@redhat.com>
+  Grzegorz Grasza (OFTC: xek) <xek@redhat.com>
 
 Work Items
 ----------
